@@ -1,13 +1,14 @@
 import React from "react";
 import * as BooksAPI from "./BooksAPI";
 import "./App.css";
-import { Link } from "react-router-dom";
+import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom'; 
 
 class ListBook extends React.Component {
-  async componentDidMount() {
+   componentDidMount() {
     this.setState({
-      books: await BooksAPI.getAll(),
+      books: this.props.bookList
     });
+
   }
   state = {
     /**
@@ -19,8 +20,10 @@ class ListBook extends React.Component {
     books: [],
     researchReslt: [],
     searchFocus: false,
+    showSearch:false
   };
 
+ 
   options = [
     { name: "Currently Reading", des: "currentlyReading" },
     { name: "Want to Read", des: "wantToRead" },
@@ -31,212 +34,220 @@ class ListBook extends React.Component {
   render() {
     return (
       <div className="app">
-        <div className="list-books">
-          <div className="list-books-title">
-            <h1>MyReads</h1>
-          </div>
-          <div className="list-books-content">
-            <div>
-              {/*========================Currently Reading======================= */}
-              <div className="bookshelf">
-                <h2 className="bookshelf-title">Currently Reading</h2>
-                <div className="bookshelf-books">
-                  <ol className="books-grid">
-                    {this.state.books.map(
-                      (el, i) =>
-                        el.shelf == "currentlyReading" && (
-                          <li key={i}>
-                            <div className="book">
-                              <div className="book-top">
-                                <div
-                                  className="book-cover"
-                                  style={{
-                                    width: 128,
-                                    height: 192,
-                                    backgroundImage: `url("${
-                                      el.imageLinks.smallThumbnail
-                                    }")`,
-                                  }}
-                                />
-                                <div className="book-shelf-changer">
-                                  <select
-                                    defaultValue={el.shelf ? el.shelf : "none"}
-                                    onChange={async (e) => {
-                                      await BooksAPI.update(
-                                        {
-                                          id: el.id,
-                                        },
-                                        e.target.value
-                                      );
+          
+             
 
-                                      this.setState({
-                                        books: await BooksAPI.getAll(),
-                                      });
-                                    }}
-                                  >
-                                    {this.options.map((opt, index) => {
-                                      return (
-                                        <option
-                                          value={opt.des}
-                                          key={index}
-                                          defaultValue={
-                                            el.shelf ? el.shelf : false
-                                          }
-                                          disabled={
-                                            el.shelf == opt.res ? true : false
-                                          }
-                                        >
-                                          {opt.name}
-                                        </option>
-                                      );
-                                    })}
-                                  </select>
+
+
+              <div className="list-books">
+              <div className="list-books-title">
+                <h1>MyReads</h1>
+              </div>
+              <div className="list-books-content">
+                <div>
+                  {/*========================Currently Reading======================= */}
+                  <div className="bookshelf">
+                    <h2 className="bookshelf-title">Currently Reading</h2>
+                    <div className="bookshelf-books">
+                      <ol className="books-grid">
+                        {this.state.books.map(
+                          (el, i) =>
+                            el.shelf == "currentlyReading" && (
+                              <li key={i}>
+                                <div className="book">
+                                  <div className="book-top">
+                                    <div
+                                      className="book-cover"
+                                      style={{
+                                        width: 128,
+                                        height: 192,
+                                        backgroundImage: `url("${
+                                          el.imageLinks.smallThumbnail
+                                        }")`,
+                                      }}
+                                    />
+                                    <div className="book-shelf-changer">
+                                      <select
+                                        defaultValue={el.shelf ? el.shelf : "none"}
+                                        onChange={async (e) => {
+                                          await BooksAPI.update(
+                                            {
+                                              id: el.id,
+                                            },
+                                            e.target.value
+                                          );
+    
+                                          this.setState({
+                                            books: await BooksAPI.getAll(),
+                                          });
+                                        }}
+                                      >
+                                        {this.options.map((opt, index) => {
+                                          return (
+                                            <option
+                                              value={opt.des}
+                                              key={index}
+                                              defaultValue={
+                                                el.shelf ? el.shelf : false
+                                              }
+                                              disabled={
+                                                el.shelf == opt.res ? true : false
+                                              }
+                                            >
+                                              {opt.name}
+                                            </option>
+                                          );
+                                        })}
+                                      </select>
+                                    </div>
+                                  </div>
+                                  <div className="book-title">{el.title}</div>
+                                  <div className="book-authors">{el.subtitle}</div>
                                 </div>
-                              </div>
-                              <div className="book-title">{el.title}</div>
-                              <div className="book-authors">{el.subtitle}</div>
-                            </div>
-                          </li>
-                        )
-                    )}
-                  </ol>
+                              </li>
+                            )
+                        )}
+                      </ol>
+                    </div>
+                  </div>
+                  <div className="bookshelf">
+                    {/*========================Want to Read======================= */}
+    
+                    <h2 className="bookshelf-title">Want to Read</h2>
+                    <div className="bookshelf-books">
+                      <ol className="books-grid">
+                        {this.state.books.map(
+                          (el, i) =>
+                            el.shelf == "wantToRead" && (
+                              <li key={i}>
+                                <div className="book">
+                                  <div className="book-top">
+                                    <div
+                                      className="book-cover"
+                                      style={{
+                                        width: 128,
+                                        height: 192,
+                                        backgroundImage: `url("${
+                                          el.imageLinks.smallThumbnail
+                                        }")`,
+                                      }}
+                                    />
+                                    <div className="book-shelf-changer">
+                                      <select
+                                        defaultValue={el.shelf ? el.shelf : "none"}
+                                        onChange={async (e) => {
+                                          await BooksAPI.update(
+                                            {
+                                              id: el.id,
+                                            },
+                                            e.target.value
+                                          );
+    
+                                          this.setState({
+                                            books: await BooksAPI.getAll(),
+                                          });
+                                        }}
+                                      >
+                                        {this.options.map((opt, index) => {
+                                          return (
+                                            <option
+                                              value={opt.des}
+                                              key={index}
+                                              selected={
+                                                el.shelf == opt.res ? true : false
+                                              }
+                                              disabled={
+                                                el.shelf == opt.res ? true : false
+                                              }
+                                            >
+                                              {opt.name}
+                                            </option>
+                                          );
+                                        })}
+                                      </select>
+                                    </div>
+                                  </div>
+                                  <div className="book-title">{el.title}</div>
+                                  <div className="book-authors">{el.subtitle}</div>
+                                </div>
+                              </li>
+                            )
+                        )}
+                      </ol>
+                    </div>
+                  </div>
+                  <div className="bookshelf">
+                    {/*=======================Read======================= */}
+    
+                    <h2 className="bookshelf-title">Read</h2>
+                    <div className="bookshelf-books">
+                      <ol className="books-grid">
+                        {this.state.books.map(
+                          (el, i) =>
+                            el.shelf == "read" && (
+                              <li key={i}>
+                                <div className="book">
+                                  <div className="book-top">
+                                    <div
+                                      className="book-cover"
+                                      style={{
+                                        width: 128,
+                                        height: 192,
+                                        backgroundImage: `url("${
+                                          el.imageLinks.smallThumbnail
+                                        }")`,
+                                      }}
+                                    />
+                                    <div className="book-shelf-changer">
+                                      <select
+                                        onChange={async (e) => {
+                                          await BooksAPI.update(
+                                            {
+                                              id: el.id,
+                                            },
+                                            e.target.value
+                                          );
+    
+                                          this.setState({
+                                            books: await BooksAPI.getAll(),
+                                          });
+                                        }}
+                                        defaultValue={el.shelf ? el.shelf : "none"}
+                                      >
+                                        {this.options.map((opt, index) => {
+                                          return (
+                                            <option
+                                              value={opt.des}
+                                              key={index}
+                                              disabled={
+                                                el.shelf == opt.res ? true : false
+                                              }
+                                            >
+                                              {opt.name}
+                                            </option>
+                                          );
+                                        })}
+                                      </select>
+                                    </div>
+                                  </div>
+                                  <div className="book-title">{el.title}</div>
+                                  <div className="book-authors">{el.subtitle}</div>
+                                </div>
+                              </li>
+                            )
+                        )}
+                      </ol>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="bookshelf">
-                {/*========================Want to Read======================= */}
-
-                <h2 className="bookshelf-title">Want to Read</h2>
-                <div className="bookshelf-books">
-                  <ol className="books-grid">
-                    {this.state.books.map(
-                      (el, i) =>
-                        el.shelf == "wantToRead" && (
-                          <li key={i}>
-                            <div className="book">
-                              <div className="book-top">
-                                <div
-                                  className="book-cover"
-                                  style={{
-                                    width: 128,
-                                    height: 192,
-                                    backgroundImage: `url("${
-                                      el.imageLinks.smallThumbnail
-                                    }")`,
-                                  }}
-                                />
-                                <div className="book-shelf-changer">
-                                  <select
-                                    defaultValue={el.shelf ? el.shelf : "none"}
-                                    onChange={async (e) => {
-                                      await BooksAPI.update(
-                                        {
-                                          id: el.id,
-                                        },
-                                        e.target.value
-                                      );
-
-                                      this.setState({
-                                        books: await BooksAPI.getAll(),
-                                      });
-                                    }}
-                                  >
-                                    {this.options.map((opt, index) => {
-                                      return (
-                                        <option
-                                          value={opt.des}
-                                          key={index}
-                                          selected={
-                                            el.shelf == opt.res ? true : false
-                                          }
-                                          disabled={
-                                            el.shelf == opt.res ? true : false
-                                          }
-                                        >
-                                          {opt.name}
-                                        </option>
-                                      );
-                                    })}
-                                  </select>
-                                </div>
-                              </div>
-                              <div className="book-title">{el.title}</div>
-                              <div className="book-authors">{el.subtitle}</div>
-                            </div>
-                          </li>
-                        )
-                    )}
-                  </ol>
-                </div>
-              </div>
-              <div className="bookshelf">
-                {/*=======================Read======================= */}
-
-                <h2 className="bookshelf-title">Read</h2>
-                <div className="bookshelf-books">
-                  <ol className="books-grid">
-                    {this.state.books.map(
-                      (el, i) =>
-                        el.shelf == "read" && (
-                          <li key={i}>
-                            <div className="book">
-                              <div className="book-top">
-                                <div
-                                  className="book-cover"
-                                  style={{
-                                    width: 128,
-                                    height: 192,
-                                    backgroundImage: `url("${
-                                      el.imageLinks.smallThumbnail
-                                    }")`,
-                                  }}
-                                />
-                                <div className="book-shelf-changer">
-                                  <select
-                                    onChange={async (e) => {
-                                      await BooksAPI.update(
-                                        {
-                                          id: el.id,
-                                        },
-                                        e.target.value
-                                      );
-
-                                      this.setState({
-                                        books: await BooksAPI.getAll(),
-                                      });
-                                    }}
-                                    defaultValue={el.shelf ? el.shelf : "none"}
-                                  >
-                                    {this.options.map((opt, index) => {
-                                      return (
-                                        <option
-                                          value={opt.des}
-                                          key={index}
-                                          disabled={
-                                            el.shelf == opt.res ? true : false
-                                          }
-                                        >
-                                          {opt.name}
-                                        </option>
-                                      );
-                                    })}
-                                  </select>
-                                </div>
-                              </div>
-                              <div className="book-title">{el.title}</div>
-                              <div className="book-authors">{el.subtitle}</div>
-                            </div>
-                          </li>
-                        )
-                    )}
-                  </ol>
-                </div>
+              <div className="open-search">
+                <Link to='/search' >Add a book</Link>
               </div>
             </div>
-          </div>
-          <div className="open-search">
-            <Link to="/search">Add a book</Link>
-          </div>
-        </div>
+          
+
+      
       </div>
     );
   }

@@ -2,12 +2,17 @@ import React from "react";
 import * as BooksAPI from "./BooksAPI";
 import "./App.css";
 import ListBook from './ListBooks'
-import Search from './search'
 
 import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom'; 
+import Search from './search'
 
 class BooksApp extends React.Component {
 
+  async componentDidMount() {
+    this.setState({
+      books: await BooksAPI.getAll(),
+    });
+  }
   state = {
     /**
      * TODO: Instead of using this state variable to keep track of which page
@@ -16,18 +21,15 @@ class BooksApp extends React.Component {
      * pages, as well as provide a good URL they can bookmark and share.
      */
     books: [],
-
-  };
-
-
+  }
 
   render() {
     return (
       <div className="app">
      <Router> 
 <Switch> 
-    <Route exact path='/' render={() => <ListBook />} ></Route> 
-    <Route exact path='/search' render={() => <Search />} ></Route> 
+    <Route exact path='/' component={() => <ListBook bookList={this.state.books} />} ></Route> 
+    <Route exact path='/search' component={() => <Search bookList={this.state.books} />} ></Route> 
 
 </Switch> 
       </Router>  

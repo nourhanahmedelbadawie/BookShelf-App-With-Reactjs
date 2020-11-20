@@ -4,11 +4,13 @@ import "./App.css";
 import { Link } from "react-router-dom";
 
 class Search extends React.Component {
-  async componentDidMount() {
-    this.state.books = this.props.bookList;
-    console.log(this.props.bookList);
-  }
-
+  
+    
+    componentDidMount() {
+        this.setState({
+          books: this.props.bookList
+        });
+      }
   state = {
     /**
      * TODO: Instead of using this state variable to keep track of which page
@@ -17,7 +19,7 @@ class Search extends React.Component {
      * pages, as well as provide a good URL they can bookmark and share.
      */
     books: [],
-    showSearchPage: false,
+    showSearch:true,
     researchReslt: [],
     searchFocus: false,
   };
@@ -31,9 +33,12 @@ class Search extends React.Component {
   render() {
     return (
       <div className="app">
+          {
+              this.state.showSearch &&
+          
         <div className="search-books">
           <div className="search-books-bar">
-            <Link className="close-search" to="/">
+            <Link to="/" className="close-search" >
               Close
             </Link>
             <div className="search-books-input-wrapper">
@@ -50,19 +55,22 @@ class Search extends React.Component {
                 placeholder="Search by title or author"
                 onChange={async (e) => {
                   let text = e.target.value.trim();
-                  if (text && text !== "") {
+                  if (text && text !== "" ) {
                     let res = await BooksAPI.search(text);
 
                     this.setState({
-                      researchReslt: res ? res : [],
+                      researchReslt: res?res:[],
                       searchFocus: true,
                     });
-                  } else {
-                    this.setState({
-                      researchReslt: this.state.books,
-                      searchFocus: true,
-                    });
+                  
                   }
+                  else{
+                    this.setState({
+                        researchReslt: this.state.books,
+                        searchFocus: false,
+                      });
+                  }
+                  
                 }}
               />
 
@@ -88,13 +96,13 @@ class Search extends React.Component {
                                 defaultValue={el.shelf ? el.shelf : "none"}
                                 onChange={async (e) => {
                                   let text = await e.target.value;
-                                  console.log("el", text);
+                                  console.log("el", this.state.researchReslt);
 
                                   let idel = await BooksAPI.get(el.id);
 
                                   await BooksAPI.update(
                                     {
-                                      id: el.id,
+                                      id: idel,
                                     },
                                     text
                                   );
@@ -123,7 +131,7 @@ class Search extends React.Component {
                         </div>
                       </li>
                     ))}
-                  {this.state.researchReslt.length == 0 &&
+                  {this.state.researchReslt.length === 0 &&
                     this.state.searchFocus == true && <p>No result is found</p>}
                 </ol>
               </div>
@@ -133,6 +141,7 @@ class Search extends React.Component {
             <ol className="books-grid" />
           </div>
         </div>
+  }
       </div>
     );
   }
