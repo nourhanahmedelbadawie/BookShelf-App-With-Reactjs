@@ -2,15 +2,10 @@ import React from "react";
 import * as BooksAPI from "./BooksAPI";
 import "./App.css";
 import { Link } from "react-router-dom";
+import Book from "./Book.js";
 
 class Search extends React.Component {
-  
-    
-    componentDidMount() {
-        this.setState({
-          books: this.props.bookList
-        });
-      }
+ 
   state = {
     /**
      * TODO: Instead of using this state variable to keep track of which page
@@ -19,7 +14,7 @@ class Search extends React.Component {
      * pages, as well as provide a good URL they can bookmark and share.
      */
     books: [],
-    showSearch:true,
+    showSearch: true,
     researchReslt: [],
     searchFocus: false,
   };
@@ -29,119 +24,72 @@ class Search extends React.Component {
     { name: "Read", des: "read" },
     { name: "None", des: "none" },
   ];
-
+   getSearchEl=async(el)=>{
+ let res= await BooksAPI.get(el.id)
+return res
+  }
+  handleShelf= async(e)=>{
+ await   this.props.updateShelfToListBook(e)
+     
+   }
   render() {
     return (
       <div className="app">
-          {
-              this.state.showSearch &&
-          
-        <div className="search-books">
-          <div className="search-books-bar">
-            <Link to="/" className="close-search" >
-              Close
-            </Link>
-            <div className="search-books-input-wrapper">
-              {/*
-                NOTES: The search from BooksAPI is limited to a particular set of search terms.
-                You can find these search terms here:
-                https://github.com/udacity/reactnd-project-myreads-starter/blob/master/SEARCH_TERMS.md
+        {this.state.showSearch && (
+          <div className="search-books">
+            <div className="search-books-bar">
+              <Link to="/" className="close-search">
+                Close
+              </Link>
+              <div className="search-books-input-wrapper">
+                <input
+                  type="text"
+                  placeholder="Search by title or author"
+                  onChange={async (e) => {
+                    let text = e.target.value.trim();
+                    if (text && text !== "") {
+                      let res = await BooksAPI.search(text);
 
-                However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
-                you don't find a specific author or title. Every search is limited by search terms.
-              */}
-              <input
-                type="text"
-                placeholder="Search by title or author"
-                onChange={async (e) => {
-                  let text = e.target.value.trim();
-                  if (text && text !== "" ) {
-                    let res = await BooksAPI.search(text);
-
-                    this.setState({
-                      researchReslt: res?res:[],
-                      searchFocus: true,
-                    });
-                  
-                  }
-                  else{
-                    this.setState({
-                        researchReslt: this.state.books,
+                      if (res.error) {
+                        this.setState({
+                          researchReslt: [],
+                          searchFocus: true,
+                        });
+                      } else {
+                        this.setState({
+                          researchReslt: res,
+                          searchFocus: true,
+                        });
+                      }
+                    } else if (!text || text === "") {
+                      this.setState({
+                        researchReslt: [],
                         searchFocus: false,
                       });
-                  }
-                  
-                }}
-              />
+                    }
+                  }}
+                />
 
-              <div className="bookshelf-books">
-                <ol className="books-grid">
-                  {this.state.researchReslt.length > 0 &&
-                    this.state.researchReslt.map((el, i) => (
-                      <li key={i}>
-                        <div className="book">
-                          <div className="book-top">
-                            <div
-                              className="book-cover"
-                              style={{
-                                width: 128,
-                                height: 192,
-                                backgroundImage: `url("${
-                                  el.imageLinks.smallThumbnail
-                                }")`,
-                              }}
-                            />
-                            <div className="book-shelf-changer">
-                              <select
-                                defaultValue={el.shelf ? el.shelf : "none"}
-                                onChange={async (e) => {
-                                  let text = await e.target.value;
-                                  console.log("el", this.state.researchReslt);
-
-                                  let idel = await BooksAPI.get(el.id);
-
-                                  await BooksAPI.update(
-                                    {
-                                      id: idel,
-                                    },
-                                    text
-                                  );
-
-                                  this.setState({
-                                    books: await BooksAPI.getAll(),
-                                  });
-                                }}
-                              >
-                                {this.options.map((opt, index) => {
-                                  return (
-                                    <React.Fragment>
-                                      {
-                                        <option value={opt.des} key={index}>
-                                          {opt.name}
-                                        </option>
-                                      }
-                                    </React.Fragment>
-                                  );
-                                })}
-                              </select>
-                            </div>
-                          </div>
-                          <div className="book-title">{el.title}</div>
-                          <div className="book-authors">{el.subtitle}</div>
-                        </div>
-                      </li>
-                    ))}
-                  {this.state.researchReslt.length === 0 &&
-                    this.state.searchFocus == true && <p>No result is found</p>}
-                </ol>
+                <div className="bookshelf-books">
+                  <ol className="books-grid">
+                    {this.state.researchReslt.length > 0 &&
+                      this.state.researchReslt.map( (el, i) => (
+                        <li key={i}>
+                       
+                          <Book singleBook={this.getSearchEl(el)} updateShelf={(e)=>this.handleShelf(e)} />
+                        </li>
+                      ))}
+                    {this.state.researchReslt.length === 0 &&
+                      this.state.searchFocus == true && (
+                        <p>No result is found</p>
+                      )}
+                  </ol>
+                </div>
               </div>
             </div>
+          
           </div>
-          <div className="search-books-results">
-            <ol className="books-grid" />
-          </div>
-        </div>
-  }
+        )}
       </div>
     );
   }

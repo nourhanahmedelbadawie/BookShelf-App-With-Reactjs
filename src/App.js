@@ -22,14 +22,18 @@ class BooksApp extends React.Component {
      */
     books: [],
   }
-
+ handleShelfToListBook=async(e)=>{
+  this.setState({
+    books: await BooksAPI.getAll(),
+  })
+}
   render() {
     return (
       <div className="app">
      <Router> 
 <Switch> 
-    <Route exact path='/' component={() => <ListBook bookList={this.state.books} />} ></Route> 
-    <Route exact path='/search' component={() => <Search bookList={this.state.books} />} ></Route> 
+    <Route exact path='/' component={() => <ListBook bookList={this.state.books} updateShelfToListBook={(e)=>this.handleShelfToListBook(e)} />} ></Route> 
+    <Route exact path='/search' component={() => <Search updateShelfToListBook={(e)=>this.handleShelfToListBook(e)} />} ></Route> 
 
 </Switch> 
       </Router>  
