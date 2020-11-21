@@ -47,10 +47,10 @@ return res
                   placeholder="Search by title or author"
                   onChange={async (e) => {
                     let text = e.target.value.trim();
+                    console.log(this.state.researchReslt.length)
                     if (text && text !== "") {
                       let res = await BooksAPI.search(text);
-
-                      if (res.error) {
+                      if (res.error||!res) {
                         this.setState({
                           researchReslt: [],
                           searchFocus: true,
@@ -81,6 +81,7 @@ return res
                       ))}
                     {this.state.researchReslt.length === 0 &&
                       this.state.searchFocus == true && (
+                        
                         <p>No result is found</p>
                       )}
                   </ol>
