@@ -39,7 +39,7 @@ class Book extends React.Component {
               />
               <div className="book-shelf-changer">
                 <select
-                  defaultValue={
+                  value={
                     this.state.book.shelf ? this.state.book.shelf : "none"
                   }
                   onChange={
@@ -64,7 +64,7 @@ class Book extends React.Component {
                       <option
                         value={opt.des}
                         key={index}
-                       selected={this.state.book.shelf==opt.des ? true :false }
+                   
                        
                       >
                         {opt.name}
